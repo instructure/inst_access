@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name                  = 'inst_access'
-  spec.version               = '0.1.1'
+  spec.version               = '0.1.2'
   spec.required_ruby_version = '>= 2.5'
   spec.authors               = ['Michael Ziwisky']
   spec.email                 = ['mziwisky@instructure.com']
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.homepage              = 'http://github.com/instructure/inst_access'
 
   spec.add_dependency 'activesupport', '>= 5'
-  spec.add_dependency 'json-jwt', '1.13.0'
+  spec.add_dependency 'json-jwt', '~> 1.13'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'byebug'
