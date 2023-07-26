@@ -85,12 +85,14 @@ describe InstAccess::Token do
         canvas_domain: 'z.instructure.com',
         real_user_uuid: 'masq-id',
         real_user_shard_id: 5,
-        region: 'us-west-2'
+        region: 'us-west-2',
+        client_id: 'client-id'
       )
       expect(id.canvas_domain).to eq('z.instructure.com')
       expect(id.masquerading_user_uuid).to eq('masq-id')
       expect(id.masquerading_user_shard_id).to eq(5)
       expect(id.region).to eq('us-west-2')
+      expect(id.client_id).to eq('client-id')
     end
 
     it 'includes global id debug info if given' do

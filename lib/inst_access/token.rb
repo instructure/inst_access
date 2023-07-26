@@ -54,6 +54,10 @@ module InstAccess
       jwt_payload[:region]
     end
 
+    def client_id
+      jwt_payload[:client_id]
+    end
+
     def to_token_string
       jwe = to_jws.encrypt(InstAccess.config.encryption_key, ENCRYPTION_ALGO, ENCRYPTION_METHOD)
       jwe.to_s
@@ -87,7 +91,8 @@ module InstAccess
         real_user_shard_id: nil,
         user_global_id: nil,
         real_user_global_id: nil,
-        region: nil
+        region: nil,
+        client_id: nil
       )
         raise ArgumentError, 'Must provide user uuid and account uuid' if user_uuid.blank? || account_uuid.blank?
 
@@ -104,7 +109,8 @@ module InstAccess
           masq_shard: real_user_shard_id,
           debug_user_global_id: user_global_id&.to_s,
           debug_masq_global_id: real_user_global_id&.to_s,
-          region: region
+          region: region,
+          client_id: client_id
         }.compact
 
         new(payload)

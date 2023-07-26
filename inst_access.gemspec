@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name                  = 'inst_access'
-  spec.version               = '0.1.1'
+  spec.version               = '0.2.0'
   spec.required_ruby_version = '>= 2.5'
   spec.authors               = ['Michael Ziwisky']
   spec.email                 = ['mziwisky@instructure.com']
