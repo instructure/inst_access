@@ -3,6 +3,8 @@ services:
   gergich:
     image: instructure/gergich
     environment:
+      - GERRIT_PATCHSET_REVISION
+      - GERRIT_CHANGE_ID
       - GERGICH_KEY
       - GERRIT_PROJECT
       - GERRIT_HOST

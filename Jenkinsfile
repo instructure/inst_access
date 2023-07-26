@@ -14,7 +14,7 @@ pipeline {
       steps {
         sh 'docker-compose build --pull'
         // Needed to ensure the docker network is created before the linters start
-        sh 'docker-compose up -d inst_access'
+        sh 'docker-compose run --rm inst_access bundle install'
         sh 'docker-compose run --rm gergich reset'
       }
     }
