@@ -97,6 +97,25 @@ describe InstAccess::Token do
       expect(id.instructure_service?).to eq true
     end
 
+    it 'generates a unique jti' do
+      uuid = SecureRandom.uuid
+
+      allow(SecureRandom).to receive(:uuid).and_return uuid
+
+      id = described_class.for_user(
+        user_uuid: 'user-uuid',
+        account_uuid: 'acct-uuid',
+        canvas_domain: 'z.instructure.com',
+        real_user_uuid: 'masq-id',
+        real_user_shard_id: 5,
+        region: 'us-west-2',
+        client_id: 'client-id',
+        instructure_service: true
+      )
+
+      expect(id.jti).to eq uuid
+    end
+
     it 'includes global id debug info if given' do
       id = described_class.for_user(
         user_uuid: 'user-uuid',

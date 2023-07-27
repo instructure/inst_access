@@ -62,6 +62,10 @@ module InstAccess
       jwt_payload[:instructure_service] == true
     end
 
+    def jti
+      jwt_payload[:jti]
+    end
+
     def to_token_string
       jwe = to_jws.encrypt(InstAccess.config.encryption_key, ENCRYPTION_ALGO, ENCRYPTION_METHOD)
       jwe.to_s
@@ -105,6 +109,7 @@ module InstAccess
 
         payload = {
           iss: ISSUER,
+          jti: SecureRandom.uuid,
           iat: now,
           exp: now + 1.hour.to_i,
           sub: user_uuid,
