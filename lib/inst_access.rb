@@ -23,6 +23,7 @@ require 'json/jwt'
 require 'inst_access/errors'
 require 'inst_access/config'
 require 'inst_access/token'
+require 'inst_access/version'
 
 module InstAccess
   class << self

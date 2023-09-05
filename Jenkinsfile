@@ -50,6 +50,20 @@ pipeline {
         }
       }
     }
+    stage('Publish') {
+      when {
+        allOf {
+          expression { GERRIT_BRANCH == "master" }
+          environment name: "GERRIT_EVENT_TYPE", value: "change-merged"
+        }
+      }
+      steps {
+        withCredentials([string(credentialsId: 'rubygems-rw', variable: 'GEM_HOST_API_KEY')]) {
+          sh 'docker build -t inst_access .'
+          sh 'docker run -e GEM_HOST_API_KEY --rm inst_access /bin/bash -lc "./bin/publish.sh"'
+        }
+      }
+    }
   }
   post {
     always {

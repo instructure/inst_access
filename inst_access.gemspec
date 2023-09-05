@@ -3,9 +3,11 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+require_relative 'lib/inst_access/version'
+
 Gem::Specification.new do |spec|
   spec.name                  = 'inst_access'
-  spec.version               = '0.4.0'
+  spec.version               = InstAccess::VERSION
   spec.required_ruby_version = '>= 2.5'
   spec.authors               = ['Michael Ziwisky']
   spec.email                 = ['mziwisky@instructure.com']

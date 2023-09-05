@@ -11,10 +11,8 @@ RUN apt-get update -qq \
 
 USER docker
 
-COPY --chown=docker:docker Gemfile inst_access.gemspec ./
+COPY --chown=docker:docker . .
 
 RUN bundle install --jobs 8
-
-COPY --chown=docker:docker . .
 
 CMD [ "/usr/src/app/bin/entrypoint.sh" ]
