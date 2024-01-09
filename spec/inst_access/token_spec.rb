@@ -87,7 +87,8 @@ describe InstAccess::Token do
         real_user_shard_id: 5,
         region: 'us-west-2',
         client_id: 'client-id',
-        instructure_service: true
+        instructure_service: true,
+        canvas_shard_id: 3
       )
       expect(id.canvas_domain).to eq('z.instructure.com')
       expect(id.masquerading_user_uuid).to eq('masq-id')
@@ -95,6 +96,7 @@ describe InstAccess::Token do
       expect(id.region).to eq('us-west-2')
       expect(id.client_id).to eq('client-id')
       expect(id.instructure_service?).to eq true
+      expect(id.canvas_shard_id).to eq(3)
     end
 
     it 'generates a unique jti' do
@@ -110,7 +112,8 @@ describe InstAccess::Token do
         real_user_shard_id: 5,
         region: 'us-west-2',
         client_id: 'client-id',
-        instructure_service: true
+        instructure_service: true,
+        canvas_shard_id: 3
       )
 
       expect(id.jti).to eq uuid

@@ -62,6 +62,10 @@ module InstAccess
       jwt_payload[:instructure_service] == true
     end
 
+    def canvas_shard_id
+      jwt_payload[:canvas_shard_id]
+    end
+
     def jti
       jwt_payload[:jti]
     end
@@ -101,7 +105,8 @@ module InstAccess
         real_user_global_id: nil,
         region: nil,
         client_id: nil,
-        instructure_service: nil
+        instructure_service: nil,
+        canvas_shard_id: nil
       )
         raise ArgumentError, 'Must provide user uuid and account uuid' if user_uuid.blank? || account_uuid.blank?
 
@@ -121,7 +126,8 @@ module InstAccess
           debug_masq_global_id: real_user_global_id&.to_s,
           region: region,
           client_id: client_id,
-          instructure_service: instructure_service
+          instructure_service: instructure_service,
+          canvas_shard_id: canvas_shard_id
         }.compact
 
         new(payload)
