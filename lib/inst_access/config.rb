@@ -22,14 +22,16 @@ require 'openssl'
 
 module InstAccess
   class Config
-    attr_reader :signing_key
+    attr_reader :signing_key, :issuers, :service_jwks
 
-    def initialize(raw_signing_key, raw_encryption_key = nil)
+    def initialize(raw_signing_key, raw_encryption_key = nil, issuers: nil, service_jwks: [])
       @signing_key = OpenSSL::PKey::RSA.new(raw_signing_key)
       if raw_encryption_key
         @encryption_key = OpenSSL::PKey::RSA.new(raw_encryption_key)
         raise ArgumentError, 'the encryption key should be a public RSA key' if @encryption_key.private?
       end
+      @issuers = issuers
+      @service_jwks = service_jwks
     rescue OpenSSL::PKey::RSAError => e
       raise ArgumentError, e
     end

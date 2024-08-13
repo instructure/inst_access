@@ -32,15 +32,15 @@ module InstAccess
     # consuming tokens, it can be the RSA public key corresponding to the
     # private key that signed them.
     # encryption_key is only required if you are going to be producing tokens.
-    def configure(signing_key:, encryption_key: nil)
-      @config = Config.new(signing_key, encryption_key)
+    def configure(signing_key:, encryption_key: nil, issuers: nil, service_jwks: nil)
+      @config = Config.new(signing_key, encryption_key, issuers: issuers, service_jwks: service_jwks)
     end
 
     # set a configuration only for the duration of the given block, then revert
     # it.  useful for testing.
-    def with_config(signing_key:, encryption_key: nil)
+    def with_config(signing_key:, encryption_key: nil, issuers: nil, service_jwks: nil)
       old_config = @config
-      configure(signing_key: signing_key, encryption_key: encryption_key)
+      configure(signing_key: signing_key, encryption_key: encryption_key, issuers: issuers, service_jwks: service_jwks)
       yield
     ensure
       @config = old_config
@@ -48,6 +48,10 @@ module InstAccess
 
     def config
       @config || raise(ConfigError, 'InstAccess is not configured!')
+    end
+
+    def configured?
+      @config.present?
     end
   end
 end

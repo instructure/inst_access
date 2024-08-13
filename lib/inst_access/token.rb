@@ -106,14 +106,15 @@ module InstAccess
         region: nil,
         client_id: nil,
         instructure_service: nil,
-        canvas_shard_id: nil
+        canvas_shard_id: nil,
+        issuer: nil
       )
         raise ArgumentError, 'Must provide user uuid and account uuid' if user_uuid.blank? || account_uuid.blank?
 
         now = Time.now.to_i
 
         payload = {
-          iss: ISSUER,
+          iss: issuer || ISSUER,
           jti: SecureRandom.uuid,
           iat: now,
           exp: now + 1.hour.to_i,
@@ -136,8 +137,17 @@ module InstAccess
 
       # Takes an unencrypted (but signed) token string
       def from_token_string(jws)
+        service_jwks = InstAccess.config.service_jwks
+        jwt = if service_jwks.present?
+          begin
+            JSON::JWT.decode(jws, service_jwks)
+          rescue StandardError
+            nil
+          end
+        end
+
         sig_key = InstAccess.config.signing_key
-        jwt = begin
+        jwt ||= begin
           JSON::JWT.decode(jws, sig_key)
         rescue StandardError => e
           raise InvalidToken, e
@@ -149,7 +159,8 @@ module InstAccess
 
       def token?(string)
         jwt = JSON::JWT.decode(string, :skip_verification)
-        jwt[:iss] == ISSUER
+        issuers = InstAccess.configured? && (issuers = InstAccess.config.issuers)
+        issuers ? issuers.include?(jwt[:iss]) : jwt[:iss] == ISSUER
       rescue StandardError
         false
       end

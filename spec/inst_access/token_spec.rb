@@ -28,10 +28,12 @@ describe InstAccess::Token do
   let(:signing_pub_key) { signing_keypair.public_key.to_s }
   let(:encryption_priv_key) { encryption_keypair.to_s }
   let(:encryption_pub_key) { encryption_keypair.public_key.to_s }
+  let(:issuers) {}
+  let(:issuer) {}
 
-  let(:a_token) { described_class.for_user(user_uuid: 'user-uuid', account_uuid: 'acct-uuid') }
+  let(:a_token) { described_class.for_user(user_uuid: 'user-uuid', account_uuid: 'acct-uuid', issuer: issuer) }
   let(:unencrypted_token) do
-    InstAccess.with_config(signing_key: signing_priv_key) do
+    InstAccess.with_config(signing_key: signing_priv_key, issuers: issuers) do
       a_token.to_unencrypted_token_string
     end
   end
@@ -41,13 +43,26 @@ describe InstAccess::Token do
       expect(described_class.token?('asdf1234stuff')).to eq(false)
     end
 
-    it 'returns false for JWTs from a different issuer' do
+    it 'returns false for JWTs from an issuer not in the list' do
       jwt = JSON::JWT.new(iss: 'bridge').to_s
       expect(described_class.token?(jwt)).to eq(false)
     end
 
     it 'returns true for an InstAccess token' do
       expect(described_class.token?(unencrypted_token)).to eq(true)
+    end
+
+    context 'with issuers configured' do
+      let(:issuers) { ['token_from_other_service'] }
+      let(:issuer) { 'token_from_other_service' }
+
+      it 'returns true for JWTs from an issuer in the list' do
+        jwt = JSON::JWT.decode(unencrypted_token, :skip_verification)
+        expect(jwt[:iss]).to eq('token_from_other_service')
+        InstAccess.with_config(signing_key: signing_priv_key, issuers: issuers) do
+          expect(described_class.token?(unencrypted_token)).to eq(true)
+        end
+      end
     end
 
     it 'returns true for an expired InstAccess token' do
@@ -187,6 +202,17 @@ describe InstAccess::Token do
         expect do
           described_class.from_token_string(unencrypted_token)
         end.to raise_error(InstAccess::InvalidToken)
+      end
+    end
+
+    it '.from_token_string decodes a token signed by a key in a configured JSON::JWK::Set' do
+      jwk = JSON::JWK.new(kid: 'token_from_other_service/file_authorization', k: 'hmac_secret', kty: 'oct')
+      payload = { sub: 'user-uuid', account_uuid: 'acct-uuid', issuer: 'other_service', exp: 5.minutes.from_now }
+      jws = JSON::JWT.new(payload).sign(jwk).to_s
+      jwk_set = JSON::JWK::Set.new([jwk])
+      InstAccess.with_config(signing_key: signing_priv_key, issuers: ['other_service'], service_jwks: jwk_set) do
+        token = described_class.from_token_string(jws)
+        expect(token.user_uuid).to eq('user-uuid')
       end
     end
   end

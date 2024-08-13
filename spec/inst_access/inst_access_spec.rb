@@ -44,4 +44,16 @@ describe InstAccess do
       end.to raise_error(ArgumentError)
     end
   end
+
+  describe '.configured?' do
+    it 'returns false if not configured' do
+      expect(described_class.configured?).to eq(false)
+    end
+
+    it 'returns true if configured' do
+      InstAccess.with_config(signing_key: signing_priv_key) do
+        expect(described_class.configured?).to eq(true)
+      end
+    end
+  end
 end
