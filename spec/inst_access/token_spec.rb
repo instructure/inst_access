@@ -63,6 +63,18 @@ describe InstAccess::Token do
           expect(described_class.token?(unencrypted_token)).to eq(true)
         end
       end
+
+      it 'returns true for JWTs from the default issuer when issuers are configured' do
+        token = described_class.for_user(user_uuid: 'user-uuid', account_uuid: 'acct-uuid')
+        jws = InstAccess.with_config(signing_key: signing_priv_key) do
+          token.to_unencrypted_token_string
+        end
+        jwt = JSON::JWT.decode(jws, :skip_verification)
+        expect(jwt[:iss]).to eq(InstAccess::Token::ISSUER)
+        InstAccess.with_config(signing_key: signing_priv_key, issuers: issuers) do
+          expect(described_class.token?(jws)).to eq(true)
+        end
+      end
     end
 
     it 'returns true for an expired InstAccess token' do

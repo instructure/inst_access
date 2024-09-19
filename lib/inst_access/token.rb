@@ -159,8 +159,8 @@ module InstAccess
 
       def token?(string)
         jwt = JSON::JWT.decode(string, :skip_verification)
-        issuers = InstAccess.configured? && (issuers = InstAccess.config.issuers)
-        issuers ? issuers.include?(jwt[:iss]) : jwt[:iss] == ISSUER
+        InstAccess.configured? && (issuers = InstAccess.config.issuers)
+        issuers&.include?(jwt[:iss]) || jwt[:iss] == ISSUER
       rescue StandardError
         false
       end
